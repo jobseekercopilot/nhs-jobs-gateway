@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 
 class NhsJobsApiClientTest {
     private final AtomicInteger responseStatus = new AtomicInteger(200);
+    private final AtomicLong responseDelayMillis = new AtomicLong();
     private final AtomicReference<URI> requestedUri = new AtomicReference<>();
     private HttpServer server;
     private NhsJobsProperties properties;
@@ -88,6 +90,33 @@ class NhsJobsApiClientTest {
                 .hasMessage("NHS Jobs response exceeded the configured size limit");
     }
 
+    @Test
+    void translatesAProviderTimeoutToStableUnavailableStatus() {
+        properties.setReadTimeout(Duration.ofMillis(50));
+        responseDelayMillis.set(250);
+
+        assertThatThrownBy(() -> new NhsJobsApiClient(properties).search(request()))
+                .isInstanceOfSatisfying(
+                        NhsJobsProviderException.class,
+                        exception -> {
+                            assertThat(exception.getStatus())
+                                    .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+                            assertThat(exception.getMessage())
+                                    .isEqualTo("NHS Jobs API request failed");
+                        });
+    }
+
+    @Test
+    void translatesAnUnavailableProviderToStableUnavailableStatus() {
+        responseStatus.set(503);
+
+        assertThatThrownBy(() -> new NhsJobsApiClient(properties).search(request()))
+                .isInstanceOfSatisfying(
+                        NhsJobsProviderException.class,
+                        exception -> assertThat(exception.getStatus())
+                                .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE));
+    }
+
     private NhsJobsSearchRequest request() {
         return new NhsJobsSearchRequest(
                 "Platform Engineer",
@@ -108,6 +137,13 @@ class NhsJobsApiClientTest {
 
     private void respond(HttpExchange exchange) throws IOException {
         requestedUri.set(exchange.getRequestURI());
+        try {
+            Thread.sleep(responseDelayMillis.get());
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            exchange.close();
+            return;
+        }
         byte[] body = """
                 <nhsJobs>
                   <totalPages>1</totalPages>

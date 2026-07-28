@@ -11,10 +11,17 @@ final class SafeNhsJobsLink {
     private SafeNhsJobsLink() {
     }
 
-    static Optional<String> live(String candidate) {
+    static Optional<String> live(String candidate, String externalJobId) {
+        if (externalJobId == null || externalJobId.isBlank()) {
+            return Optional.empty();
+        }
+        String expectedPath = "/candidate/jobadvert/" + externalJobId;
         return allowlisted(candidate, LIVE_HOST)
-                .filter(link -> URI.create(link).getPath()
-                        .startsWith("/candidate/jobadvert/"));
+                .filter(link -> {
+                    URI uri = URI.create(link);
+                    return expectedPath.equals(uri.getRawPath())
+                            && uri.getQuery() == null;
+                });
     }
 
     static String fixture(String id) {
@@ -34,8 +41,9 @@ final class SafeNhsJobsLink {
                     && host != null
                     && expectedHost.equals(host.toLowerCase(Locale.ROOT))
                     && uri.getUserInfo() == null
-                    && (uri.getPort() == -1 || uri.getPort() == 443)
-                    && uri.getFragment() == null;
+                    && uri.getPort() == -1
+                    && uri.getFragment() == null
+                    && uri.getRawQuery() == null;
             return safe ? Optional.of(uri.normalize().toASCIIString()) : Optional.empty();
         } catch (IllegalArgumentException exception) {
             return Optional.empty();

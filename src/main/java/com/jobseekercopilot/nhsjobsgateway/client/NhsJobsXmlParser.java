@@ -3,6 +3,9 @@ package com.jobseekercopilot.nhsjobsgateway.client;
 import com.jobseekercopilot.nhsjobsgateway.model.CanonicalJob;
 import com.jobseekercopilot.nhsjobsgateway.model.NhsJobsSearchResponse;
 import java.io.ByteArrayInputStream;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.XMLConstants;
@@ -17,6 +20,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 final class NhsJobsXmlParser {
+    private final Clock clock;
+
+    NhsJobsXmlParser() {
+        this(Clock.systemUTC());
+    }
+
+    NhsJobsXmlParser(Clock clock) {
+        this.clock = clock;
+    }
+
     NhsJobsSearchResponse parse(
             byte[] xml,
             int requestedPage,
@@ -35,7 +48,10 @@ final class NhsJobsXmlParser {
             List<CanonicalJob> jobs = new ArrayList<>();
             NodeList vacancyNodes = root.getElementsByTagName("vacancyDetails");
             for (int index = 0; index < vacancyNodes.getLength(); index++) {
-                jobs.add(map((Element) vacancyNodes.item(index)));
+                CanonicalJob job = map((Element) vacancyNodes.item(index));
+                if (!isExpired(job.closesAt())) {
+                    jobs.add(job);
+                }
             }
             return NhsJobsSearchResponse.available(
                     totalResults,
@@ -51,9 +67,10 @@ final class NhsJobsXmlParser {
     }
 
     private CanonicalJob map(Element vacancy) {
-        String link = SafeNhsJobsLink.live(text(vacancy, "url")).orElse(null);
+        String externalJobId = text(vacancy, "id");
+        String link = SafeNhsJobsLink.live(text(vacancy, "url"), externalJobId).orElse(null);
         return new CanonicalJob(
-                text(vacancy, "id"),
+                externalJobId,
                 text(vacancy, "reference"),
                 text(vacancy, "title"),
                 text(vacancy, "employer"),
@@ -66,6 +83,18 @@ final class NhsJobsXmlParser {
                 "NHS Jobs",
                 link,
                 link);
+    }
+
+    private boolean isExpired(String closesAt) {
+        if (closesAt == null) {
+            return false;
+        }
+        try {
+            return LocalDate.parse(closesAt).isBefore(LocalDate.now(clock));
+        } catch (DateTimeParseException exception) {
+            throw new NhsJobsProviderException(
+                    "NHS Jobs vacancy close date is invalid");
+        }
     }
 
     private List<String> locations(Element vacancy) {
