@@ -25,7 +25,7 @@ public class FixtureNhsJobsProviderClient implements NhsJobsProviderClient {
                     "Community Staff Nurse",
                     "Northshire Community NHS Foundation Trust",
                     "Support a synthetic community nursing team across Northshire.",
-                    List.of("Northshire, NS1 2AB"),
+                    List.of("Northshire, NS1 2AB", "Reading, RG1 1AA"),
                     "£31,049 to £37,796 a year",
                     "Permanent",
                     "2026-07-20",

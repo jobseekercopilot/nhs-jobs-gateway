@@ -35,6 +35,17 @@ class FixtureNhsJobsProviderClientTest {
                 .containsExactly("Data Analyst");
     }
 
+    @Test
+    void supportsTheStrictNhsNursingJourneyFromTheNamedStateLocation() {
+        var response = client.search(request("Community Staff Nurse", "Reading"));
+
+        assertThat(response.totalResults()).isEqualTo(1);
+        assertThat(response.jobs()).singleElement().satisfies(job -> {
+            assertThat(job.externalJobId()).isEqualTo("C9855-FIXTURE-001");
+            assertThat(job.locations()).contains("Reading, RG1 1AA");
+        });
+    }
+
     private NhsJobsSearchRequest request(String keyword, String location) {
         return new NhsJobsSearchRequest(
                 keyword,
