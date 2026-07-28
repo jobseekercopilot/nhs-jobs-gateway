@@ -102,10 +102,10 @@ final class NhsJobsXmlParser {
 
     private List<String> locations(Element vacancy) {
         List<String> result = new ArrayList<>();
-        NodeList nodes = vacancy.getElementsByTagName("locations");
+        NodeList nodes = vacancy.getElementsByTagName("*");
         for (int index = 0; index < nodes.getLength(); index++) {
             Node node = nodes.item(index);
-            if (!hasElementChildren(node)) {
+            if (isLocationElement(node) && !hasElementChildren(node)) {
                 String value = clean(node.getTextContent());
                 if (value != null && !result.contains(value)) {
                     result.add(value);
@@ -113,6 +113,11 @@ final class NhsJobsXmlParser {
             }
         }
         return List.copyOf(result);
+    }
+
+    private boolean isLocationElement(Node node) {
+        return "location".equals(node.getNodeName())
+                || "locations".equals(node.getNodeName());
     }
 
     private boolean hasElementChildren(Node node) {

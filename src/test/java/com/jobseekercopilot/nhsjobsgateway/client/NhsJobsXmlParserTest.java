@@ -27,8 +27,8 @@ class NhsJobsXmlParserTest {
                     <closeDate>2026-08-20</closeDate>
                     <postDate>2026-07-20</postDate>
                     <locations>
-                      <locations>London, SW1A 1AA</locations>
-                      <locations>Remote</locations>
+                      <location>London, SW1A 1AA</location>
+                      <location>Remote</location>
                     </locations>
                     <reference>B0263-26-0332</reference>
                     <salary>£31,049 to £37,796 a year</salary>
