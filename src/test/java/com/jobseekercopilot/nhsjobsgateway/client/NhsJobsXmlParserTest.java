@@ -20,7 +20,7 @@ class NhsJobsXmlParserTest {
                   <totalPages>3</totalPages>
                   <totalResults>21</totalResults>
                   <vacancyDetails>
-                    <id>C123-FIXTURE</id>
+                    <id>5502681</id>
                     <title>Staff Nurse</title>
                     <employer>Example NHS Trust</employer>
                     <description>A deliberately synthetic overview.</description>
@@ -30,10 +30,10 @@ class NhsJobsXmlParserTest {
                       <locations>London, SW1A 1AA</locations>
                       <locations>Remote</locations>
                     </locations>
-                    <reference>123-FIXTURE</reference>
+                    <reference>B0263-26-0332</reference>
                     <salary>£31,049 to £37,796 a year</salary>
                     <type>Permanent</type>
-                    <url>https://www.jobs.nhs.uk/candidate/jobadvert/C123-FIXTURE</url>
+                    <url>https://beta.jobs.nhs.uk/candidate/jobadvert/B0263-26-0332</url>
                   </vacancyDetails>
                 </nhsJobs>
                 """;
@@ -44,14 +44,14 @@ class NhsJobsXmlParserTest {
         assertThat(response.totalPages()).isEqualTo(3);
         assertThat(response.totalResults()).isEqualTo(21);
         assertThat(response.jobs()).singleElement().satisfies(job -> {
-            assertThat(job.externalJobId()).isEqualTo("C123-FIXTURE");
-            assertThat(job.reference()).isEqualTo("123-FIXTURE");
+            assertThat(job.externalJobId()).isEqualTo("5502681");
+            assertThat(job.reference()).isEqualTo("B0263-26-0332");
             assertThat(job.title()).isEqualTo("Staff Nurse");
             assertThat(job.employer()).isEqualTo("Example NHS Trust");
             assertThat(job.locations()).containsExactly("London, SW1A 1AA", "Remote");
             assertThat(job.salaryText()).isEqualTo("£31,049 to £37,796 a year");
             assertThat(job.sourceUrl()).isEqualTo(
-                    "https://www.jobs.nhs.uk/candidate/jobadvert/C123-FIXTURE");
+                    "https://www.jobs.nhs.uk/candidate/jobadvert/B0263-26-0332");
             assertThat(job.applicationUrl()).isEqualTo(job.sourceUrl());
         });
     }

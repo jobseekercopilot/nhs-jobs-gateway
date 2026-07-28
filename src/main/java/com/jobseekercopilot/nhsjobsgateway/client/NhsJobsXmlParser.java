@@ -68,10 +68,13 @@ final class NhsJobsXmlParser {
 
     private CanonicalJob map(Element vacancy) {
         String externalJobId = text(vacancy, "id");
-        String link = SafeNhsJobsLink.live(text(vacancy, "url"), externalJobId).orElse(null);
+        String reference = text(vacancy, "reference");
+        String link = SafeNhsJobsLink.live(
+                        text(vacancy, "url"), externalJobId, reference)
+                .orElse(null);
         return new CanonicalJob(
                 externalJobId,
-                text(vacancy, "reference"),
+                reference,
                 text(vacancy, "title"),
                 text(vacancy, "employer"),
                 text(vacancy, "description"),
