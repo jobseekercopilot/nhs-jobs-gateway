@@ -2,6 +2,7 @@ package com.jobseekercopilot.nhsjobsgateway.model;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
@@ -9,7 +10,8 @@ public record NhsJobsSearchRequest(
         @Size(max = 200) String keyword,
         @Size(max = 200) String location,
         @Min(0) @Max(100) Integer distanceMiles,
-        @Size(max = 3) String countryCode,
+        @Pattern(regexp = "GB(?:-(?:ENG|SCT|WLS))?")
+                String countryCode,
         @Size(max = 20) List<@Size(max = 80) String> contractTypes,
         @Size(max = 20) List<@Size(max = 80) String> staffGroups,
         @Size(max = 20) List<@Size(max = 80) String> workingPatterns,

@@ -46,4 +46,14 @@ class NhsJobsSearchControllerTest {
                         .content("{\"resultsPerPage\":101}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void rejectsUnsupportedNhsJobsCountryCodes() throws Exception {
+        mvc.perform(post("/api/v1/nhs/jobs/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"location":"London","distanceMiles":25,
+                                 "countryCode":"ENG"}"""))
+                .andExpect(status().isBadRequest());
+    }
 }

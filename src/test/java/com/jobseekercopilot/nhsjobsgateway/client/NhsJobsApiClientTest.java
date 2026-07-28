@@ -56,7 +56,7 @@ class NhsJobsApiClientTest {
                 .contains("keyword=Platform+Engineer")
                 .contains("location=Leeds")
                 .contains("distance=15")
-                .contains("countryCode=ENG")
+                .contains("countryCode=GB-ENG")
                 .contains("contractType=Permanent")
                 .contains("staffGroup=Administrative+%26+Clerical")
                 .contains("workingPattern=Full+time")
@@ -122,7 +122,7 @@ class NhsJobsApiClientTest {
                 "Platform Engineer",
                 "Leeds",
                 15,
-                "ENG",
+                "GB-ENG",
                 List.of("Permanent"),
                 List.of("Administrative & Clerical"),
                 List.of("Full time"),
