@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: nhs-jobs-gateway
+
+server:
+  port: ${SERVER_PORT:8104}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
+nhs-jobs:
+  base-url: ${NHS_JOBS_BASE_URL:https://www.jobs.nhs.uk/api/v1/search_xml}
+  enabled: ${NHS_JOBS_ENABLED:true}
+  results-per-page: ${NHS_JOBS_RESULTS_PER_PAGE:50}
+  default-country-code: ${NHS_JOBS_DEFAULT_COUNTRY_CODE:GB-ENG}
+
+external-provider:
+  mode: ${EXTERNAL_PROVIDER_MODE:FIXTURE}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{correlationId}] [%thread] %logger{36} - %msg%n"
+  level:
+    com.jobseekercopilot: ${APP_LOG_LEVEL:INFO}
+    org.springframework.web.reactive.function.client.ExchangeFunctions: WARN
