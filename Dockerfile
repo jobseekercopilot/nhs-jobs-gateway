@@ -3,8 +3,9 @@ WORKDIR /workspace
 COPY pom.xml .
 COPY src src
 RUN mvn -q -DskipTests package
-FROM eclipse-temurin:17-jre
-RUN useradd --system --uid 10001 app
+FROM eclipse-temurin:17-jre-alpine
+RUN apk add --no-cache wget \
+    && adduser -S -D -H -u 10001 app
 WORKDIR /app
 COPY --from=build /workspace/target/nhs-jobs-gateway-1.0.0.jar app.jar
 USER 10001
