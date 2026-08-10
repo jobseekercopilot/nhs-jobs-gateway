@@ -1,11 +1,3 @@
-# nhs-jobs-gateway
-
-## Develop branch status
-
-**README-only repository skeleton; not part of the runtime catalogue or Docker Compose.** No NHS Jobs API contract, provider mapping, configuration, database, or local port can be confirmed; the text below is an intended design.
-
-See the central [provider status](https://docs.jobseekercopilot.com/services/provider-integrations/) and [implementation status](https://docs.jobseekercopilot.com/reference/implementation-status/).
-Provider-specific NHS Jobs Self-Serve API gateway for Job Seeker Copilot
 # NHS Jobs Gateway
 
 NHS Jobs Gateway is the Job Seeker Copilot boundary around the official NHS
@@ -15,6 +7,14 @@ official listing URL without scraping candidate pages.
 
 The authoritative provider endpoint is `https://www.jobs.nhs.uk/api/v1/search_xml`.
 The retired `/api/v1/vacancies` endpoint is intentionally not used.
+
+NHS Jobs Service Delivery confirmed in writing on 31 July 2026 that the
+Job Seeker Copilot use described for this endpoint is acceptable. The approved
+use covers minimised public-vacancy display, TTL-bounded caching, prompt expiry
+removal, cross-provider matching/deduplication, clear NHS Jobs attribution and
+official redirects in invited beta and a later commercial product. The service
+does not ingest applicant data or internal-only vacancies, scrape candidate
+pages, or imply NHS endorsement.
 
 ## Modes and configuration
 
