@@ -42,7 +42,7 @@ public class NhsJobsApiClient implements NhsJobsProviderClient {
                 if (request.salaryMinimum() != null) builder.queryParam("salaryFrom", request.salaryMinimum());
                 if (request.salaryMaximum() != null) builder.queryParam("salaryTo", request.salaryMaximum());
                 if (request.postedWithinDays() != null && request.postedWithinDays() > 0) builder.queryParam("publishedFrom", LocalDate.now().minusDays(request.postedWithinDays()));
-                return builder.queryParam("page", page).queryParam("limit", pageSize).queryParam("sort", "publicationDateDesc").build();
+                return builder.queryParam("page", page).queryParam("limit", pageSize).build();
             }).retrieve().bodyToMono(String.class).block();
             if (body == null || body.isBlank()) throw new NhsJobsProviderException("NHS Jobs returned an empty response", null);
             NhsJobsSearchResponse response = parser.parse(body, page, pageSize);
