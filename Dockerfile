@@ -4,6 +4,12 @@ COPY pom.xml .
 COPY src src
 RUN mvn -q -DskipTests package
 FROM eclipse-temurin:17-jre-alpine
+# Upgrade the OpenSSL runtime packages to the CVE-2026-14456 fixed build.
+RUN apk add --no-cache --upgrade \
+    libcrypto3=3.5.8-r0 \
+    libssl3=3.5.8-r0 \
+    openssl=3.5.8-r0
+
 RUN apk add --no-cache wget \
     && adduser -S -D -H -u 10001 app
 WORKDIR /app
